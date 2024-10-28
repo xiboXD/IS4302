@@ -1,26 +1,28 @@
 pragma solidity ^0.5.0;
 
 import "./ERC20.sol";
+import "../User.sol"; // Import User contract
 
 contract WorkHiveToken {
-    ERC20 erc20Contract;
-    uint256 supplyLimit;
-    uint256 currentSupply;
-    uint256 price;
-    uint256 numberOfUsers;
-    address owner;
+    ERC20 public erc20Contract;
+    User public userContract; 
+    uint256 public supplyLimit;
+    uint256 public currentSupply;
+    uint256 public price;
+    uint256 public numberOfUsers;
+    address public owner;
 
-    mapping(address => bool) UsersWithTokens;
-    mapping(address => bool) Authorised;
+    mapping(address => bool) public UsersWithTokens;
+    mapping(address => bool) public Authorised;
 
     event NewAllowedAddress(address _recipient);
     event NewAuthorisedAddress(address _address);
     event MintToken(address to, uint256 amount);
     event BurnToken(address to, uint256 amount);
 
-    constructor() public {
-        ERC20 e = new ERC20();
-        erc20Contract = e;
+    constructor(address _erc20Address, address _userAddress) public {
+        erc20Contract = ERC20(_erc20Address);
+        userContract = User(_userAddress); 
         owner = msg.sender;
         currentSupply = 0;
         price = 1000;
@@ -34,10 +36,12 @@ contract WorkHiveToken {
     }
 
     modifier onlyAuthorised() {
-        require(
-            Authorised[msg.sender] == true,
-            "You do not have permission to do this"
-        );
+        require(Authorised[msg.sender], "You do not have permission to do this");
+        _;
+    }
+
+    modifier onlyRegisteredUser(address _address) {
+        require(userContract.isUser(_address), "Address is not a registered user");
         _;
     }
 
@@ -47,28 +51,22 @@ contract WorkHiveToken {
     }
 
     // Mint tokens
-    function mintToken(
-        uint256 amount,
-        address _to
-    ) public onlyAuthorisedAddress {
+    function mintToken(uint256 amount, address _to) public onlyAuthorised onlyRegisteredUser(_to) {
         uint256 amtOfToken = amount / price;
-        erc20Contract.mint(_to, amount);
-        currentSupply = currentSupply + amount;
-        if (UsersWithTokens[_to] == false) {
+        erc20Contract.mint(_to, amtOfToken);
+        currentSupply += amtOfToken;
+        if (!UsersWithTokens[_to]) {
             // New user
-            numberOfUsers = numberOfUsers + 1;
+            numberOfUsers++;
             UsersWithTokens[_to] = true;
         }
-        emit MintToken(_to, amount);
+        emit MintToken(_to, amtOfToken);
     }
 
     // Burn tokens
-    function burnToken(
-        uint256 amount,
-        address _from
-    ) public onlyAuthorisedAddress {
+    function burnToken(uint256 amount, address _from) public onlyAuthorised onlyRegisteredUser(_from) {
         erc20Contract.burn(_from, amount);
-        currentSupply = currentSupply - amount;
+        currentSupply -= amount;
         emit BurnToken(_from, amount);
     }
 
@@ -87,7 +85,7 @@ contract WorkHiveToken {
         return price;
     }
 
-    // check if address is authoried
+    // check if address is authorized
     function checkAuthorised(address addr) public view returns (bool) {
         return Authorised[addr];
     }

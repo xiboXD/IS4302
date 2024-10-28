@@ -122,4 +122,9 @@ contract User {
         require(newOwner != address(0), "New owner is the zero address");
         owner = newOwner;
     }
+
+    function getAddressFromUserId(uint256 userId) public view returns (address) {
+        require(userId < numUsers, "Invalid user ID");
+        return userIdToAddress[userId];
+    }
 }
