@@ -1,3 +1,104 @@
+# Payment Smart Contract
+
+## Overview
+The `Payment` smart contract facilitates financial transactions between clients and freelancers. It manages the escrow of payments associated with job contracts, ensures payment completion upon job fulfillment, and handles refunds in case of disputes.
+
+## Functions
+
+### 1. `initiatePayment`
+Initiates a payment transaction, transferring funds from a client to an escrow to be held until job completion.
+- **Parameters**:
+  - `clientId` (`uint256`): The unique identifier of the client initiating the payment.
+  - `freelancerId` (`uint256`): The unique identifier of the freelancer who will receive the payment upon job completion.
+  - `jobId` (`uint256`): The unique identifier of the job associated with the payment.
+  - `amount` (`uint256`): The amount of tokens to be transferred to the escrow.
+
+- **Returns**: None.
+- **Events**:
+  - `PaymentInitiated`: Emitted when a payment is successfully initiated. Includes payment details such as payment ID, job ID, amounts, and participant IDs.
+
+---
+
+### 2. `completePayment`
+Releases funds from escrow to the freelancer once the job is confirmed complete.
+
+- **Parameters**:
+  - `paymentId` (`uint256`):     The unique identifier of the payment to be completed.
+
+- **Returns**: None.
+- **Events**:
+  - `PaymentCompleted`: Emitted when a payment is completed, indicating the payment ID.
+
+---
+
+### 3. `refundPayment`
+Refunds the escrowed funds back to the client in cases where the job is not completed as per the agreed terms.
+
+- **Parameters**:
+  - `paymentId` (`uint256`):     The unique identifier of the payment to be completed.
+
+- **Returns**: None.
+- **Events**:
+  - `PaymentRefunded`: Emitted when a payment is refunded to the client, specifying the payment ID.
+
+---
+
+### 4. `getCurrentStatus`
+Provides the current status of a specified payment, indicating whether it is pending, completed, or refunded.
+
+- **Parameters**:
+  - `paymentId` (`uint256`):     The unique identifier of the payment to be completed.
+
+- **Returns**: 
+  - `PaymentStatus`: The current status of the payment as an enum value (PAYMENT_PENDING, JOB_COMPLETE, REFUNDED).
+
+---
+
+### 5. `getPaymentDetails`
+Retrieves detailed information about a specific payment, including participant IDs, job ID, amount, and current balance.
+
+- **Parameters**:
+  - `paymentId` (`uint256`):     The unique identifier of the payment to be completed.
+
+- **Returns**: 
+  - Tuple containing:
+    - `clientId` (`uint256`): The current status of the payment as an enum value (PAYMENT_PENDING, JOB_COMPLETE, REFUNDED).
+    - `freelancerId` (`uint256`): The current status of the payment as an enum value (PAYMENT_PENDING, JOB_COMPLETE, REFUNDED).
+    - `jobId` (`uint256`): The current status of the payment as an enum value (PAYMENT_PENDING, JOB_COMPLETE, REFUNDED).
+    - `amount` (`uint256`): The current status of the payment as an enum value (PAYMENT_PENDING, JOB_COMPLETE, REFUNDED).
+    - `balance` (`uint256`): The current status of the payment as an enum value (PAYMENT_PENDING, JOB_COMPLETE, REFUNDED).
+    - `status` (`PaymentStatus`): The current status of the payment as an enum value (PAYMENT_PENDING, JOB_COMPLETE, REFUNDED).
+
+---
+
+## Events
+
+### `PaymentInitiated`
+Emitted when a new payment is initiated and funds are transferred to escrow.
+
+- **Parameters**:
+  - `paymentId` (`uint256`): The unique identifier of the payment.
+  - `jobId` (`uint256`): Associated job ID.
+  - `freelancerId` (`uint256`): ID of the freelancer.
+  - `clientId` (`uint256`): ID of the client.
+  - `amount` (`uint256`): Amount transferred to escrow.
+
+---
+
+### `PaymentCompleted`
+Emitted when a payment is completed and funds are released to the freelancer.
+
+- **Parameters**:
+  - `paymentId` (`uint256`): The unique identifier of the completed payment.
+
+---
+
+### `PaymentRefunded`
+Emitted when a payment is refunded to the client.
+
+- **Parameters**:
+  - `paymentId` (`uint256`): The unique identifier of the refunded payment.
+
 # ResumeReviews Smart Contract
 
 ## Overview
