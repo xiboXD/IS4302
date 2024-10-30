@@ -123,8 +123,20 @@ contract User {
         owner = newOwner;
     }
 
-    function getAddressFromUserId(uint256 userId) public view returns (address) {
+    function getAddressFromUserId(
+        uint256 userId
+    ) public view returns (address) {
         require(userId < numUsers, "Invalid user ID");
         return userIdToAddress[userId];
+    }
+
+    function isClient(uint256 userId) public view returns (bool) {
+        require(userId < numUsers, "Invalid user ID");
+        return users[userId].userType == UserType.Client;
+    }
+
+    function isFreelancer(uint256 userId) public view returns (bool) {
+        require(userId < numUsers, "Invalid user ID");
+        return users[userId].userType == UserType.Freelancer;
     }
 }

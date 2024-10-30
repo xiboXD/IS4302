@@ -50,7 +50,7 @@ contract JobListing {
 
     modifier onlyClient(uint256 clientId) {
         require(
-            userContract.isUserType(clientId, UserType.CLIENT),
+            userContract.isClient(clientId);
             "Only clients can perform this action"
         );
         _;
@@ -94,7 +94,7 @@ contract JobListing {
     function bidJob(uint256 jobId, uint256 freelancerId) public {
         Job storage job = jobs[jobId];
         require(
-            userContract.isUserType(freelancerId, UserType.FREELANCER),
+            userContract.isFreelancer(freelancerId),
             "Only freelancers can bid"
         );
         require(
@@ -138,13 +138,7 @@ contract JobListing {
         emit JobCancelled(jobId);
     }
 
-    function getJobDetails(
-        uint256 jobId
-    )
-        public
-        view
-        returns (uint256, uint256, uint256, string memory, uint256, JobStatus)
-    {
+    function getJobDetails(uint256 jobId) public view returns (uint256, uint256, uint256, string memory, uint256, JobStatus) {
         Job storage job = jobs[jobId];
         return (
             job.jobId,
