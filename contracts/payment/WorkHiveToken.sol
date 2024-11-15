@@ -89,4 +89,14 @@ contract WorkHiveToken {
     function checkAuthorised(address addr) public view returns (bool) {
         return Authorised[addr];
     }
+
+    // Proxy transferFrom to erc20Contract for handling token transfers
+    function transferFrom(address from, address to, uint256 amount) public returns (bool) {
+        return erc20Contract.transferFrom(from, to, amount);
+    }
+
+    // Proxy transferFrom to erc20Contract for handling token transfers
+    function transfer(address to, uint256 amount) public returns (bool) {
+        return erc20Contract.transfer(to, amount);
+    }
 }

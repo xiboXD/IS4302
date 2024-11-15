@@ -15,7 +15,7 @@ contract User {
         uint256 rating;
     }
 
-    address private owner;
+    address public owner;
     mapping(uint256 => UserProfile) private users;
     mapping(address => mapping(uint256 => uint256)) private addressToUserTypeId;
     mapping(uint256 => address) private userIdToAddress;

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.5.0;
+pragma experimental ABIEncoderV2;
 
 import "./User.sol";
 
@@ -32,7 +33,7 @@ contract ResumeReviews {
     event WorkExperienceAdded(uint256 indexed userId, string jobTitle); // Changed to use userId instead of address
     event ReviewSubmitted(uint256 indexed reviewerId, uint256 indexed revieweeId, uint8 rating); // Changed to use userId instead of address
 
-    constructor(address userAddress) {
+    constructor(address userAddress) public {
         userContract = User(userAddress);  // Initialize the User contract
     }
 
@@ -56,7 +57,7 @@ contract ResumeReviews {
         });
 
         users[userId].workHistory.push(newExperience);
-        emit WorkExperienceAdded(msg.sender, jobTitle);
+        emit WorkExperienceAdded(userId, jobTitle); // Pass userId instead of msg.sender
     }
 
     function addReview(

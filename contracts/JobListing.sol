@@ -50,7 +50,7 @@ contract JobListing {
 
     modifier onlyClient(uint256 clientId) {
         require(
-            userContract.isClient(clientId);
+            userContract.isClient(clientId),
             "Only clients can perform this action"
         );
         _;

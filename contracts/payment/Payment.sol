@@ -14,7 +14,7 @@ contract Payment {
         REFUNDED
     }
 
-    struct Payment {
+    struct PaymentDetails {
         uint256 clientId;
         uint256 freelancerId;
         uint256 jobId;
@@ -23,19 +23,17 @@ contract Payment {
         PaymentStatus status;
     }
 
-    mapping(uint256 => Payment) public payments;
+    mapping(uint256 => PaymentDetails) public payments;
+    uint256 private numPayments; // to track payment IDs
 
     event PaymentInitiated(uint256 indexed paymentId, uint256 indexed jobId, uint256 indexed freelancerId, uint256 clientId, uint256 amount);
     event PaymentCompleted(uint256 paymentId);
     event PaymentPartiallyRefunded(uint256 paymentId);
     event PaymentFullyRefunded(uint256 paymentId);
 
-    constructor(
-        address _userContract,
-        address _tokenContract,
-    ) public {
+    constructor(address _userContract, address _tokenContract) public {
         owner = msg.sender;
-        userContract = UserManagement(_userContract);
+        userContract = User(_userContract); // corrected reference to User contract
         tokenContract = WorkHiveToken(_tokenContract);
     }
 
@@ -50,7 +48,7 @@ contract Payment {
         
         tokenContract.transferFrom(userContract.getAddressFromUserId(clientId), address(this), amount);
 
-        payments[numPayments] = Payment({
+        payments[numPayments] = PaymentDetails({
             clientId: clientId,
             freelancerId: freelancerId,
             jobId: jobId,
@@ -60,10 +58,11 @@ contract Payment {
         });
 
         emit PaymentInitiated(numPayments, jobId, freelancerId, clientId, amount);
+        numPayments++; // increment payment count
     }
 
     function completePayment(uint256 paymentId) public {
-        Payment storage payment = payments[paymentId];
+        PaymentDetails storage payment = payments[paymentId];
         require(payment.status == PaymentStatus.PAYMENT_PENDING, "Payment is not in the correct status");
 
         tokenContract.transfer(userContract.getAddressFromUserId(payment.freelancerId), payment.amount);
@@ -74,14 +73,14 @@ contract Payment {
     }
 
     function refundPayment(uint256 paymentId) public {
-        Payment storage payment = payments[paymentId];
+        PaymentDetails storage payment = payments[paymentId];
         require(payment.status == PaymentStatus.PAYMENT_PENDING, "Payment is not in the correct status");
 
-        sproutTokenContract.transfer(userContract.getAddressFromUserId(payment.clientId), payment.balance);
+        tokenContract.transfer(userContract.getAddressFromUserId(payment.clientId), payment.balance);
         payment.balance = 0;
         payment.status = PaymentStatus.REFUNDED;
 
-        emit PaymentRefunded(paymentId);
+        emit PaymentFullyRefunded(paymentId); // corrected event name
     }
 
     function getCurrentStatus(uint256 paymentId) public view returns (PaymentStatus) {
@@ -89,7 +88,7 @@ contract Payment {
     }
 
     function getPaymentDetails(uint256 paymentId) public view returns (uint256, uint256, uint256, uint256, uint256, PaymentStatus) {
-        Payment storage payment = payments[paymentId];
+        PaymentDetails storage payment = payments[paymentId];
         return (
             payment.clientId,
             payment.freelancerId,
