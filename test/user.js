@@ -1,3 +1,4 @@
+const truffleAssert = require("truffle-assertions");
 const User = artifacts.require("User");
 
 contract("User", (accounts) => {

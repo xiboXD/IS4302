@@ -5,7 +5,7 @@ import "../User.sol"; // Import User contract
 
 contract WorkHiveToken {
     ERC20 public erc20Contract;
-    User public userContract; 
+    User public userContract;
     uint256 public supplyLimit;
     uint256 public currentSupply;
     uint256 public price;
@@ -20,12 +20,13 @@ contract WorkHiveToken {
     event MintToken(address to, uint256 amount);
     event BurnToken(address to, uint256 amount);
 
-    constructor(address _erc20Address, address _userAddress) public {
-        erc20Contract = ERC20(_erc20Address);
-        userContract = User(_userAddress); 
+    constructor(address _userAddress) public {
+        ERC20 erc20 = new ERC20();
+        erc20Contract = erc20;
+        userContract = User(_userAddress);
         owner = msg.sender;
         currentSupply = 0;
-        price = 1000;
+        price = 1000000000000000000;
         Authorised[owner] = true;
         numberOfUsers = 0;
     }
@@ -36,12 +37,18 @@ contract WorkHiveToken {
     }
 
     modifier onlyAuthorised() {
-        require(Authorised[msg.sender], "You do not have permission to do this");
+        require(
+            Authorised[msg.sender],
+            "You do not have permission to do this"
+        );
         _;
     }
 
     modifier onlyRegisteredUser(address _address) {
-        require(userContract.isUser(_address), "Address is not a registered user");
+        require(
+            userContract.isUser(_address),
+            "Address is not a registered user"
+        );
         _;
     }
 
@@ -51,7 +58,7 @@ contract WorkHiveToken {
     }
 
     // Mint tokens
-    function mintToken(uint256 amount, address _to) public onlyAuthorised onlyRegisteredUser(_to) {
+    function mintToken(uint256 amount, address _to) public onlyAuthorised {
         uint256 amtOfToken = amount / price;
         erc20Contract.mint(_to, amtOfToken);
         currentSupply += amtOfToken;
@@ -64,7 +71,7 @@ contract WorkHiveToken {
     }
 
     // Burn tokens
-    function burnToken(uint256 amount, address _from) public onlyAuthorised onlyRegisteredUser(_from) {
+    function burnToken(uint256 amount, address _from) public {
         erc20Contract.burn(_from, amount);
         currentSupply -= amount;
         emit BurnToken(_from, amount);
@@ -91,12 +98,39 @@ contract WorkHiveToken {
     }
 
     // Proxy transferFrom to erc20Contract for handling token transfers
-    function transferFrom(address from, address to, uint256 amount) public returns (bool) {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public returns (bool) {
         return erc20Contract.transferFrom(from, to, amount);
     }
 
     // Proxy transferFrom to erc20Contract for handling token transfers
     function transfer(address to, uint256 amount) public returns (bool) {
         return erc20Contract.transfer(to, amount);
+    }
+
+    function approvedTransferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public returns (bool) {
+        return erc20Contract.approvedTransferFrom(from, to, amount);
+    }
+
+    function approve(address spender, uint256 amount) public returns (bool) {
+        return erc20Contract.approve(spender, amount);
+    }
+
+    function balanceOf(address addr) public view returns (uint256) {
+        return erc20Contract.balanceOf(addr);
+    }
+
+    function allowance(
+        address owner,
+        address spender
+    ) public view returns (uint256) {
+        return erc20Contract.allowance(owner, spender);
     }
 }

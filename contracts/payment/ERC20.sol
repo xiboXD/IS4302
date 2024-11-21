@@ -97,7 +97,7 @@ contract ERC20 {
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
         require(_to != address(0));
-        require(_value <= balances[msg.sender]);
+        require(_value <= balances[msg.sender], "Insufficient balance");
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -117,8 +117,9 @@ contract ERC20 {
         uint256 _value
     ) public returns (bool) {
         require(_to != address(0));
-        require(_value <= balances[_from]);
-        require(_value <= allowed[_from][tx.origin]);
+        require(_value <= balances[_from], "Insufficient balance");
+        // require(_value <= allowed[_from][tx.origin], "Not enough allowance");
+        require(_value <= allowed[tx.origin][_from], "Not enough allowance");
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);

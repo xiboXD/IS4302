@@ -39,7 +39,7 @@ contract User {
         string memory username,
         string memory name,
         string memory email
-    ) public {
+    ) public returns (uint256) {
         require(usernamesToUserId[username] == 0, "Username already exists.");
         require(
             addressToUserTypeId[msg.sender][uint(userType)] == 0,
@@ -62,6 +62,7 @@ contract User {
         usernamesToUserId[username] = userId;
 
         emit NewUserRegistered(userId, userType);
+        return userId;
     }
 
     function updateUserDetails(
