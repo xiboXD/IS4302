@@ -74,28 +74,26 @@ contract("JobListing", (accounts) => {
     assert.equal(jobDetails[4], newPaymentAmount, "Updated payment amount does not match");
   });
 
-//   it("should allow a freelancer to bid on a job", async () => {
-//     const result = await jobListingInstance.bidJob(
-//       1,
-//       freelancerId,
-//       { from: freelancer }
-//     );
+  it("should allow a freelancer to bid on a job", async () => {
+    const result = await jobListingInstance.bidJob(
+      0,
+      1,
+    );
 
-//     const jobDetails = await jobListingInstance.getJobDetails(1);
-//     assert.equal(jobDetails[2].toNumber(), freelancerId, "Freelancer ID does not match");
-//     assert.equal(jobDetails[5].toString(), "1", "Job status is not IN_PROGRESS");
-//   });
+    const jobDetails = await jobListingInstance.getJobDetails(1);
+    assert.equal(jobDetails[2].toNumber(), freelancerId, "Freelancer ID does not match");
+    assert.equal(jobDetails[5].toString(), "1", "Job status is not IN_PROGRESS");
+  });
 
-//   it("should allow the freelancer to complete the job", async () => {
-//     const result = await jobListingInstance.completeJob(
-//       1,
-//       { from: freelancer }
-//     );
+  it("should allow the freelancer to complete the job", async () => {
+    const result = await jobListingInstance.completeJob(
+      1
+    );
 
 
-//     const jobDetails = await jobListingInstance.getJobDetails(1);
-//     assert.equal(jobDetails[5].toString(), "2", "Job status is not COMPLETED");
-//   });
+    const jobDetails = await jobListingInstance.getJobDetails(1);
+    assert.equal(jobDetails[5].toString(), "2", "Job status is not COMPLETED");
+  });
 
   it("should allow the client to cancel an open job", async () => {
     // List another job
