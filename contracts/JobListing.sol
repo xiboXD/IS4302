@@ -105,7 +105,7 @@ contract JobListing {
         // Initiate escrow service payment to payment.sol for the job
         paymentContract.initiatePayment(
             job.clientId,
-            job.freelancerId,
+            freelancerId,
             jobId,
             job.paymentAmount
         );
@@ -138,7 +138,13 @@ contract JobListing {
         emit JobCancelled(jobId);
     }
 
-    function getJobDetails(uint256 jobId) public view returns (uint256, uint256, uint256, string memory, uint256, JobStatus) {
+    function getJobDetails(
+        uint256 jobId
+    )
+        public
+        view
+        returns (uint256, uint256, uint256, string memory, uint256, JobStatus)
+    {
         Job storage job = jobs[jobId];
         return (
             job.jobId,
