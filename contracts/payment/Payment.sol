@@ -34,7 +34,6 @@ contract Payment {
         uint256 amount
     );
     event PaymentCompleted(uint256 paymentId);
-    event PaymentPartiallyRefunded(uint256 paymentId);
     event PaymentFullyRefunded(uint256 paymentId);
 
     constructor(address _userContract, address _tokenContract) public {

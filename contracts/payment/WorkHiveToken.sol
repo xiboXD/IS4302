@@ -15,7 +15,6 @@ contract WorkHiveToken {
     mapping(address => bool) public UsersWithTokens;
     mapping(address => bool) public Authorised;
 
-    event NewAllowedAddress(address _recipient);
     event NewAuthorisedAddress(address _address);
     event MintToken(address to, uint256 amount);
     event BurnToken(address to, uint256 amount);
