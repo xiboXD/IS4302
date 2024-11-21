@@ -119,7 +119,7 @@ contract ERC20 {
         require(_to != address(0));
         require(_value <= balances[_from], "Insufficient balance");
         // require(_value <= allowed[_from][tx.origin], "Not enough allowance");
-        require(_value <= allowed[tx.origin][_from], "Not enough allowance");
+        //require(_value <= allowed[tx.origin][_from], "Not enough allowance");
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
